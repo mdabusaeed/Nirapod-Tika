@@ -1,10 +1,14 @@
 from django.urls import path, include
 from rest_framework_nested import routers
-from users.views import UserProfileView, UserRegistrationView
+from users.views import UserProfileView, UserRegistrationView 
+from vaccination.views import VaccineViewSet, VaccinationScheduleViewSet
+from users.views import UserProfileView
 
 
 router = routers.DefaultRouter()
-router.register('UserProfileView', UserProfileView)
+router.register('profile', UserProfileView, basename='profile')
+router.register('vaccines', VaccineViewSet, basename = 'vaccine')
+router.register('vaccination-schedules', VaccinationScheduleViewSet, basename = 'vaccination-schedules' )
 
 
 
