@@ -18,14 +18,28 @@ class VaccineViewSet(ModelViewSet):
         serializer.save(created_by=self.request.user)  
 
 class VaccinationScheduleViewSet(ModelViewSet):
-    queryset = VaccinationSchedule.objects.all()
     serializer_class = VaccinationScheduleSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_queryset(self):
+        """
+        Doctor সব রোগীর booking দেখতে পারবে,
+        কিন্তু Patient শুধুমাত্র নিজের booking দেখতে পারবে।
+        """
+        user = self.request.user
+        if user.role == 'doctor':
+            return VaccinationSchedule.objects.all()  # Doctor সব booking দেখতে পারবে
+        return VaccinationSchedule.objects.filter(patient=user)  # Patient শুধুমাত্র নিজেরটা দেখতে পারবে
 
-    def perform_create(self, serializer):
-        if self.request.user.role != 'doctor':
-            raise PermissionDenied("Only doctors can create vaccination schedules.")
-        serializer.save(created_by=self.request.user)  
+    def update(self, request, *args, **kwargs):
+        """
+        শুধুমাত্র Doctor Vaccine Booking এর সময় পরিবর্তন করতে পারবে।
+        """
+        user = self.request.user
+        if user.role != 'doctor':
+            return Response({"error": "Only doctors can modify vaccine schedules."}, status=status.HTTP_403_FORBIDDEN)
+
+        return super().update(request, *args, **kwargs)
 
 
 class PatientVaccinationHistoryViewSet(ModelViewSet):
@@ -35,12 +49,3 @@ class PatientVaccinationHistoryViewSet(ModelViewSet):
     def get_queryset(self):
         return VaccinationSchedule.objects.filter(patient=self.request.user)
     
-# class PatientVaccinationHistoryView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def get(self, request):
-#         vaccinations = VaccinationSchedule.objects.filter(patient=request.user)
-        
-#         serializer = VaccinationScheduleSerializer(vaccinations, many=True)
-        
-#         return Response(serializer.data)
