@@ -21,9 +21,6 @@ class UserProfileView(ModelViewSet):
     def get_object(self):
         return self.request.user
     
-    # def create(self, request, *args, **kwargs):
-    #     return Response({"error": "User creation is not allowed. Use PUT or PATCH for updating your profile."}, status=400)
-    
     def retrieve(self, request, *args, **kwargs):
         user = self.get_object()
         
@@ -64,9 +61,6 @@ class DoctorProfileView(ModelViewSet):
     def get_object(self):
         return self.request.user 
     
-    # def create(self, request, *args, **kwargs):
-    #     return Response({"error": "User creation is not allowed. Use PUT or PATCH for updating your profile."}, status=400)
-
     def update(self, request, *args, **kwargs):
         user = self.get_object()
 
@@ -83,9 +77,6 @@ class ChangePasswordViewSet(ModelViewSet):
         return User.objects.filter(id=self.request.user.id)  
 
     def update(self, request, *args, **kwargs):
-        """
-        Update password for authenticated user.
-        """
         user = self.get_object()
         serializer = self.get_serializer(user, data=request.data, partial=True) 
         if serializer.is_valid():

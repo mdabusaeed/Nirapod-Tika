@@ -142,3 +142,5 @@ DJOSER = {
     },
 }
 
+STRIPE_TEST_SECRET_KEY = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+STRIPE_TEST_PUBLISHABLE_KEY = 'pk_test_TYooMQauvdEDq54NiTphI7jx'
