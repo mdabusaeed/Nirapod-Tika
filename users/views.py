@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from users.serializers import UserCreateSerializer 
 from .models import User
-from .serializers import UserSerializer,DoctorSerializer,ChangePasswordSerializer
+from .serializers import UserSerializer,DoctorSerializer
 from vaccination.models import VaccinationSchedule  
 from vaccination.serializers import VaccinationScheduleSerializer
 
@@ -16,7 +16,10 @@ class UserProfileView(ModelViewSet):
     serializer_class = UserSerializer
 
     def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)
+        if self.request.user.is_staff:  
+            return User.objects.filter(role='patient')  
+        else:
+            return User.objects.filter(id=self.request.user.id)  
     
     def get_object(self):
         return self.request.user
@@ -55,8 +58,12 @@ class DoctorProfileView(ModelViewSet):
     serializer_class = DoctorSerializer
     parser_classes = (MultiPartParser, FormParser)
 
+
     def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)  
+        if self.request.user.is_staff:  
+            return User.objects.filter(role='doctor') 
+        else:
+            return User.objects.filter(id=self.request.user.id)  
 
     def get_object(self):
         return self.request.user 
@@ -70,16 +77,3 @@ class DoctorProfileView(ModelViewSet):
 
         return Response(serializer.data)
     
-class ChangePasswordViewSet(ModelViewSet):
-    serializer_class = ChangePasswordSerializer
-
-    def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)  
-
-    def update(self, request, *args, **kwargs):
-        user = self.get_object()
-        serializer = self.get_serializer(user, data=request.data, partial=True) 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Password updated successfully!"}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

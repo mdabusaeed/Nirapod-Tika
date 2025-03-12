@@ -1,6 +1,5 @@
 from djoser.serializers import UserCreateSerializer as BaseUserRegistrationSerializer, UserSerializer as BaseUserSerializer
 from rest_framework import serializers
-from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import check_password
 from rest_framework.validators import UniqueValidator
 from users.models import User
@@ -44,27 +43,3 @@ class DoctorSerializer(serializers.ModelSerializer):
     profile_picture = serializers.ImageField(required=False)
 
     
-class ChangePasswordSerializer(serializers.ModelSerializer):
-    old_password = serializers.CharField(required=True, write_only=True)
-    new_password = serializers.CharField(required=True, write_only=True, validators=[validate_password])
-
-    class Meta:
-        model = User
-        fields = ['old_password', 'new_password']
-
-    def validate_old_password(self, value):
-        """
-        Check if the old password is correct.
-        """
-        user = self.instance 
-        if not check_password(value, user.password):
-            raise serializers.ValidationError("Old password is incorrect.")
-        return value
-
-    def update(self, instance, validated_data):
-        """
-        Update the user's password securely.
-        """
-        instance.set_password(validated_data['new_password']) 
-        instance.save()
-        return instance

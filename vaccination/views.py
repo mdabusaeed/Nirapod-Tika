@@ -22,7 +22,6 @@ class VaccineViewSet(ModelViewSet):
 
 class VaccinationScheduleViewSet(ModelViewSet):
     serializer_class = VaccinationScheduleSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
 
@@ -100,7 +99,6 @@ class PatientVaccinationHistoryViewSet(ModelViewSet):
 
 class VaccineReviewViewSet(ModelViewSet):
     serializer_class = VaccineReviewSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return VaccineReview.objects.all() 

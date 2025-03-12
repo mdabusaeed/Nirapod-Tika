@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import timedelta
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_yasg', 
     'rest_framework',
     'djoser',
     'api',
@@ -130,12 +132,15 @@ REST_FRAMEWORK = {
     ],
 }
 
-# SIMPLE_JWT = {
-#    'AUTH_HEADER_TYPES': ('JWT',),
-#        "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-# }
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
+       "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+}
 
 DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {
         'user_create': 'users.serializers.UserCreateSerializer',
         'current_user': 'users.serializers.UserSerializer',
@@ -144,3 +149,12 @@ DJOSER = {
 
 STRIPE_TEST_SECRET_KEY = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 STRIPE_TEST_PUBLISHABLE_KEY = 'pk_test_TYooMQauvdEDq54NiTphI7jx'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+# EMAIL_USE_SSL = False 
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')

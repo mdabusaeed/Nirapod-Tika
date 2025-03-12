@@ -1,0 +1,5 @@
+__pycache__/
+.env
+.NirapodTika_env
+db.sqlite3
+
